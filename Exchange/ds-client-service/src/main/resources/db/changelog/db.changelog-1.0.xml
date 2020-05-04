@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="asigra">
+        <sql>
+            CREATE TABLE backupset (
+            id BIGINT NOT NULL AUTO_INCREMENT,
+            name VARCHAR(255) NOT NULL,
+            description VARCHAR(255) NOT NULL,
+            creation_date DATE,
+            CONSTRAINT pk_id PRIMARY KEY (id)
+            );
+        </sql>
+        <rollback>
+            DROP TABLE backupset;
+        </rollback>
+    </changeSet>
+    <changeSet id="2" author="asigra">
+        <sql>
+            CREATE TABLE transaction (
+            id BIGINT NOT NULL AUTO_INCREMENT,
+            backupset_id BIGINT NOT NULL,
+            user_id BIGINT NOT NULL,
+            date_of_operation DATETIME,
+            CONSTRAINT pk_id PRIMARY KEY (id),
+            CONSTRAINT fk_tran_backupset FOREIGN KEY (backupset_id) REFERENCES backupset(id) ON DELETE CASCADE ON UPDATE CASCADE
+            );
+        </sql>
+        <rollback>
+            DROP TABLE transaction;
+        </rollback>
+    </changeSet>
+    <changeSet id="3" author="asigra">
+        <sql>
+            INSERT INTO backupset (name, description, creation_date) VALUES('Email', 'Outlook emails',  NOW());
+            INSERT INTO backupset (name, description, creation_date) VALUES('File System', 'Linux file system',  NOW());
+            INSERT INTO backupset (name, description, creation_date) VALUES('Database', 'Oracle database',  NOW());
+            INSERT INTO backupset (name, description, creation_date) VALUES('VM', 'Windows VM',  NOW());
+        </sql>
+        <rollback>
+            TRUNCATE TABLE backupset;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
